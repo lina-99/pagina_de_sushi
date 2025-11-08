@@ -1,0 +1,31 @@
+.fondo {
+  background: linear-gradient(
+    150deg,
+    #f0f0f0 50%, 
+    #ffffff 0%
+  );
+  
+  width: 100%;
+  height: 400px;
+}
+
+
+.titulo-negocio {
+  font-family: 'Playfair Display', serif; 
+  font-weight: 700; 
+  color: #333; 
+  letter-spacing: 2px; 
+  margin-bottom: 0.25rem; 
+}
+
+
+.mensaje-slogan {
+  font-size: 1.25rem; 
+  font-style: italic; 
+  color: #6c757d !important; 
+}
+
+
+body {
+  font-family: sans-serif; 
+}
