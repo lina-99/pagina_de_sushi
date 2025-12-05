@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +11,35 @@
 
     <title>Sushi Bogota</title>
     
+    <!-- Carga de Tailwind CSS para un diseño moderno y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Personalización de la fuente Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc; /* Color de fondo muy claro */
+        }
+        /* Estilos específicos para la tarjeta */
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .loading-ring {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #EF4444; /* Rojo para el anillo de carga */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body class="fondo">
 
@@ -50,6 +79,144 @@
     </div>
   </div>
 </nav>
+
+<header class="text-center mb-10">
+        <h1 class="text-4xl font-extrabold text-gray-800">Menú de Sushi Dinámico</h1>
+        <p class="text-xl text-gray-500 mt-2">Registros extraídos de la API de backend (Puerto 3000)</p>
+    </header>
+
+    <!-- Contenedor donde se renderizarán las recetas -->
+    <div id="recipes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <!-- Contenido dinámico se insertará aquí -->
+    </div>
+
+    <!-- Contenedor para mensajes de carga o error -->
+    <div id="message-container" class="flex justify-center items-center h-40">
+        <div id="loading-spinner" class="loading-ring"></div>
+    </div>
+
+
+    <script>
+        // 1. Definición de la URL del endpoint de la API
+        const API_URL = 'http://localhost:3000/api/recipes';
+        
+        // Elementos del DOM
+        const recipesContainer = document.getElementById('recipes-container');
+        const messageContainer = document.getElementById('message-container');
+
+        /**
+         * Función para generar el HTML de una tarjeta de receta (registro).
+         * Esta función 'pinta' (renderiza) un solo registro.
+         * @param {Object} recipe - El objeto JSON de la receta.
+         * @returns {string} El string HTML para la tarjeta.
+         */
+        function createRecipeCard(recipe) {
+            // Formatear el precio a moneda local
+            const formattedPrice = new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'USD' // Asumo USD, puedes cambiar a COP o tu moneda
+            }).format(recipe.price);
+
+            // Retornamos el HTML de la tarjeta, usando los datos del registro (recipe)
+            return `
+                <div class="card bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                    <!-- Imagen del Producto/Registro -->
+                    <img src="${recipe.imageUrl}" 
+                         alt="Imagen de ${recipe.name}" 
+                         class="w-full h-48 object-cover bg-gray-200"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x200/cccccc/000000?text=Sushi+Placeholder';" 
+                    />
+                    
+                    <div class="p-6">
+                        <!-- Nombre del Registro -->
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">${recipe.name}</h2>
+                        
+                        <!-- Descripción del Registro -->
+                        <p class="text-gray-600 mb-4">${recipe.description}</p>
+                        
+                        <!-- Detalles: Precio y Lista de Ingredientes -->
+                        <div class="flex justify-between items-center mb-4 pt-2 border-t border-gray-100">
+                            <span class="text-3xl font-extrabold text-red-600">${formattedPrice}</span>
+                            <span class="text-sm font-medium text-gray-500">ID: ${recipe.id}</span>
+                        </div>
+
+                        <!-- Botón o acción (ej. ver ingredientes) -->
+                        <div class="mt-4">
+                            <button class="w-full bg-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200 shadow-md">
+                                Ver Ingredientes
+                            </button>
+                        </div>
+                        
+                        <!-- Lista de Ingredientes (opcional, para demostrar más datos) -->
+                        <ul class="text-sm text-gray-500 mt-3 list-disc list-inside space-y-1">
+                            ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                        </ul>
+
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * Función principal para cargar y renderizar los datos de la API.
+         */
+        async function loadAndRenderRecipes() {
+            // Muestra el spinner de carga
+            messageContainer.innerHTML = '<div id="loading-spinner" class="loading-ring"></div>';
+
+            try {
+                // **Paso clave de conexión:** Usa fetch() para llamar a tu API de backend
+                const response = await fetch(API_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status} - No se pudieron cargar los datos.`);
+                }
+
+                // **Paso clave de extracción:** Convierte la respuesta HTTP al formato JSON (los registros)
+                const recipesData = await response.json();
+
+                // Oculta el mensaje de carga
+                messageContainer.innerHTML = ''; 
+
+                // **Paso clave de renderizado (pintado):**
+                if (Array.isArray(recipesData) && recipesData.length > 0) {
+                    let htmlContent = '';
+                    // Tomamos los 3 primeros elementos (registros) para cumplir con el requisito
+                    const itemsToDisplay = recipesData.slice(0, 3);
+                    
+                    itemsToDisplay.forEach(recipe => {
+                        // Llamamos a la función para 'pintar' la tarjeta
+                        htmlContent += createRecipeCard(recipe);
+                    });
+                    
+                    recipesContainer.innerHTML = htmlContent;
+                    
+                    if (itemsToDisplay.length < 3) {
+                         messageContainer.innerHTML = `<p class="text-lg text-yellow-600">⚠️ Solo se encontraron ${itemsToDisplay.length} registros. Se necesitan 3.</p>`;
+                    }
+
+                } else {
+                    recipesContainer.innerHTML = '';
+                    messageContainer.innerHTML = '<p class="text-lg text-red-600">❌ Error: La API no devolvió datos de recetas válidos.</p>';
+                }
+
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                // Muestra un mensaje de error si no se pudo conectar
+                recipesContainer.innerHTML = '';
+                messageContainer.innerHTML = `
+                    <div class="text-center p-6 bg-red-100 rounded-lg shadow-inner">
+                        <p class="text-xl font-semibold text-red-700">¡Error de Conexión o Servidor!</p>
+                        <p class="text-red-500 mt-2">Asegúrate de que tu servidor Express (corriendo en el puerto 3000) esté activo.</p>
+                        <p class="text-red-500 mt-1 text-sm">Detalle: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Ejecutar la función cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', loadAndRenderRecipes);
+    </script>
 
 <div class="container text-center my-5 py-5">
   
