@@ -1,43 +1,111 @@
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="es"> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="estilos.css">
-
-    <title>Sushi Bogota</title>
-    
-    <!-- Carga de Tailwind CSS para un diseño moderno y responsivo -->
+    <title>Sushi Bogotá</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Personalización de la fuente Inter */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7fafc; /* Color de fondo muy claro */
-        }
-        /* Estilos específicos para la tarjeta */
-        .card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        .loading-ring {
+        
+        .loading-spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #EF4444; /* Rojo para el anillo de carga */
+            border-left-color: #EF4444;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
         }
+        
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        
+        /* Botón flotante para crear producto */
+        .btn-create-float {
+            position: fixed;
+            bottom: 100px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 999;
+            border: none;
+        }
+        
+        .btn-create-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        /* Modal overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: #000;
         }
     </style>
 </head>
@@ -45,33 +113,20 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
   <div class="container-fluid">
-    
     <a class="navbar-brand" href="#">
       <img src="img/logo2.png" alt="Logo Sushi Bogotá" height="30" class="d-inline-block align-text-top">
-      <span class="ms-2 fw-bold text-dark">Sushi Bogota</span>
+      <span class="ms-2 fw-bold text-dark">Sushi Bogotá</span>
     </a>
-
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
-
     <div class="collapse navbar-collapse" id="navbarNav">
-      
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Inicio</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Menú</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Carrito</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Contactanos</a>
-        </li>
+        <li class="nav-item"><a class="nav-link active" href="#">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="#menu-dinamico">Menú Dinámico</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Carrito</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contacto">Contáctanos</a></li>
       </ul>
-      
       <form class="d-flex" role="search">
         <input class="form-control me-2" type="search" placeholder="Buscar..." aria-label="Search">
         <button class="btn btn-outline-success" type="submit">Buscar</button>
@@ -80,167 +135,45 @@
   </div>
 </nav>
 
-<header class="text-center mb-10">
-        <h1 class="text-4xl font-extrabold text-gray-800">Menú de Sushi Dinámico</h1>
-        <p class="text-xl text-gray-500 mt-2">Registros extraídos de la API de backend (Puerto 3000)</p>
-    </header>
-
-    <!-- Contenedor donde se renderizarán las recetas -->
-    <div id="recipes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        <!-- Contenido dinámico se insertará aquí -->
-    </div>
-
-    <!-- Contenedor para mensajes de carga o error -->
-    <div id="message-container" class="flex justify-center items-center h-40">
-        <div id="loading-spinner" class="loading-ring"></div>
-    </div>
-
-
-    <script>
-        // 1. Definición de la URL del endpoint de la API
-        const API_URL = 'http://localhost:3000/api/recipes';
-        
-        // Elementos del DOM
-        const recipesContainer = document.getElementById('recipes-container');
-        const messageContainer = document.getElementById('message-container');
-
-        /**
-         * Función para generar el HTML de una tarjeta de receta (registro).
-         * Esta función 'pinta' (renderiza) un solo registro.
-         * @param {Object} recipe - El objeto JSON de la receta.
-         * @returns {string} El string HTML para la tarjeta.
-         */
-        function createRecipeCard(recipe) {
-            // Formatear el precio a moneda local
-            const formattedPrice = new Intl.NumberFormat('es-CO', {
-                style: 'currency',
-                currency: 'USD' // Asumo USD, puedes cambiar a COP o tu moneda
-            }).format(recipe.price);
-
-            // Retornamos el HTML de la tarjeta, usando los datos del registro (recipe)
-            return `
-                <div class="card bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                    <!-- Imagen del Producto/Registro -->
-                    <img src="${recipe.imageUrl}" 
-                         alt="Imagen de ${recipe.name}" 
-                         class="w-full h-48 object-cover bg-gray-200"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x200/cccccc/000000?text=Sushi+Placeholder';" 
-                    />
-                    
-                    <div class="p-6">
-                        <!-- Nombre del Registro -->
-                        <h2 class="text-2xl font-bold text-gray-800 mb-2">${recipe.name}</h2>
-                        
-                        <!-- Descripción del Registro -->
-                        <p class="text-gray-600 mb-4">${recipe.description}</p>
-                        
-                        <!-- Detalles: Precio y Lista de Ingredientes -->
-                        <div class="flex justify-between items-center mb-4 pt-2 border-t border-gray-100">
-                            <span class="text-3xl font-extrabold text-red-600">${formattedPrice}</span>
-                            <span class="text-sm font-medium text-gray-500">ID: ${recipe.id}</span>
-                        </div>
-
-                        <!-- Botón o acción (ej. ver ingredientes) -->
-                        <div class="mt-4">
-                            <button class="w-full bg-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200 shadow-md">
-                                Ver Ingredientes
-                            </button>
-                        </div>
-                        
-                        <!-- Lista de Ingredientes (opcional, para demostrar más datos) -->
-                        <ul class="text-sm text-gray-500 mt-3 list-disc list-inside space-y-1">
-                            ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
-                        </ul>
-
-                    </div>
-                </div>
-            `;
-        }
-
-        /**
-         * Función principal para cargar y renderizar los datos de la API.
-         */
-        async function loadAndRenderRecipes() {
-            // Muestra el spinner de carga
-            messageContainer.innerHTML = '<div id="loading-spinner" class="loading-ring"></div>';
-
-            try {
-                // **Paso clave de conexión:** Usa fetch() para llamar a tu API de backend
-                const response = await fetch(API_URL);
-                
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status} - No se pudieron cargar los datos.`);
-                }
-
-                // **Paso clave de extracción:** Convierte la respuesta HTTP al formato JSON (los registros)
-                const recipesData = await response.json();
-
-                // Oculta el mensaje de carga
-                messageContainer.innerHTML = ''; 
-
-                // **Paso clave de renderizado (pintado):**
-                if (Array.isArray(recipesData) && recipesData.length > 0) {
-                    let htmlContent = '';
-                    // Tomamos los 3 primeros elementos (registros) para cumplir con el requisito
-                    const itemsToDisplay = recipesData.slice(0, 3);
-                    
-                    itemsToDisplay.forEach(recipe => {
-                        // Llamamos a la función para 'pintar' la tarjeta
-                        htmlContent += createRecipeCard(recipe);
-                    });
-                    
-                    recipesContainer.innerHTML = htmlContent;
-                    
-                    if (itemsToDisplay.length < 3) {
-                         messageContainer.innerHTML = `<p class="text-lg text-yellow-600">⚠️ Solo se encontraron ${itemsToDisplay.length} registros. Se necesitan 3.</p>`;
-                    }
-
-                } else {
-                    recipesContainer.innerHTML = '';
-                    messageContainer.innerHTML = '<p class="text-lg text-red-600">❌ Error: La API no devolvió datos de recetas válidos.</p>';
-                }
-
-            } catch (error) {
-                console.error('Fetch Error:', error);
-                // Muestra un mensaje de error si no se pudo conectar
-                recipesContainer.innerHTML = '';
-                messageContainer.innerHTML = `
-                    <div class="text-center p-6 bg-red-100 rounded-lg shadow-inner">
-                        <p class="text-xl font-semibold text-red-700">¡Error de Conexión o Servidor!</p>
-                        <p class="text-red-500 mt-2">Asegúrate de que tu servidor Express (corriendo en el puerto 3000) esté activo.</p>
-                        <p class="text-red-500 mt-1 text-sm">Detalle: ${error.message}</p>
-                    </div>
-                `;
-            }
-        }
-
-        // Ejecutar la función cuando el documento esté listo
-        document.addEventListener('DOMContentLoaded', loadAndRenderRecipes);
-    </script>
-
 <div class="container text-center my-5 py-5">
-  
-  <h1 class="display-3 titulo-negocio">
-    Sushi Bogotá D.C</h1>
-  
+  <h1 class="display-3 titulo-negocio">Sushi Bogotá D.C</h1>
 </div>
 
+<!-- Sección de Menú Dinámico desde la API -->
+<section id="menu-dinamico" class="container my-5">
+  <h2 class="text-center mb-4 display-5 fw-bold titulo-negocio">Nuestro Menú en Tiempo Real</h2>
+  <p class="text-center text-muted mb-5">Productos cargados dinámicamente desde nuestra base de datos</p>
+  
+  <!-- Contenedor de loading -->
+  <div id="loading-container" class="text-center my-5">
+    <div class="loading-spinner mx-auto"></div>
+    <p class="mt-3 text-muted">Cargando productos...</p>
+  </div>
+  
+  <!-- Contenedor de productos dinámicos -->
+  <div id="productos-container" class="row row-cols-1 row-cols-md-3 g-4">
+    <!-- Los productos se cargarán aquí dinámicamente -->
+  </div>
+  
+  <!-- Mensaje de error -->
+  <div id="error-container" class="alert alert-danger d-none" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    <span id="error-message"></span>
+  </div>
+</section>
 
 <div class="container my-5">
-  <h2 class="text-center mb-4">Platillos Destacados </h2>
-  
+  <h2 class="text-center mb-4">Platillos Destacados</h2>
   <div class="row row-cols-1 row-cols-md-3 g-4">
-    
     <div class="col">
       <div class="card h-100 shadow-sm">
         <img src="img/poket 1.jpg" class="card-img-top" alt="">
         <div class="card-body">
-          <h5 class="card-title">Bowl del Pacífico </h5>
+          <h5 class="card-title">Bowl del Pacífico</h5>
           <p class="card-text text-muted">Salmon, camarón, acompañado de aguacate, maiz, cubos de mango y un toque de cebolin</p>
         </div>
       </div>
     </div>
-    
     <div class="col">
       <div class="card h-100 shadow-sm">
         <img src="img/ceviche 1.jpg" class="card-img-top" alt="">
@@ -250,55 +183,15 @@
         </div>
       </div>
     </div>
-    
     <div class="col">
       <div class="card h-100 shadow-sm">
         <img src="img/sushiperro.JPG" class="card-img-top" alt="">
         <div class="card-body">
           <h5 class="card-title">Sushi Perro</h5>
-          <p class="card-text text-muted">Relleno de arroz, palmito de cangrejo desmechado en salasa dinamita,salmon glaseado en salsa teriyaki,aguacate,queso crema acompañado de mango dulce y anjonjoli negro </p>
+          <p class="card-text text-muted">Relleno de arroz, palmito de cangrejo desmechado en salasa dinamita,salmon glaseado en salsa teriyaki,aguacate,queso crema acompañado de mango dulce y anjonjoli negro</p>
         </div>
       </div>
     </div>
-    
-  </div>
-</div>
-
-<div class="container my-5">
-  
-  
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-    
-    <div class="col">
-      <div class="card h-100 shadow-sm">
-        <img src="img/rollo1.jpg" class="card-img-top" alt="Roll de Sushi Clásico">
-        <div class="card-body">
-          <h5 class="card-title">Black Panter</h5>
-          <p class="card-text text-muted">Palmito de cangrejo y salmon, acompañado de palmito en salsa dinamitay ajonjoli negro</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="col">
-      <div class="card h-100 shadow-sm">
-        <img src="img/sushi7.PNG" class="card-img-top lag" alt="">
-        <div class="card-body">
-          <h5 class="card-title">Lanjostinos Tempura</h5>
-          <p class="card-text text-muted">4 unidades de langostinos crocantes acompañados con salsa de la casa con un toque de picante</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="col">
-      <div class="card h-100 shadow-sm">
-        <img src="img/sushi10.jpg" class="card-img-top" alt="Postre japonés">
-        <div class="card-body">
-          <h5 class="card-title">Temarí</h5>
-          <p class="card-text text-muted">5 unidades de Temari, langostino, salmon, atún y aguacate </p>
-        </div>
-      </div>
-    </div>
-    
   </div>
 </div>
 
@@ -306,167 +199,132 @@
   <h2 class="text-center mb-5 display-4 fw-bold titulo-negocio">
     La Experiencia "Next Level": Barcos y Estadios de Sushi
   </h2>
-
   <div class="row align-items-center mb-5 py-4">
-    
     <div class="col-md-6 order-md-1">
       <h3 class="fw-bold text-primary mb-3">Barcos de Sushi: Elegancia y Abundancia</h3>
-      <p class="lead">
-        ¿Buscas llevar tu evento o reunión a un nivel épico y memorable? El Barco de Sushi es la cúspide de la elegancia. Es perfecto para cenas íntimas, celebraciones de aniversario o reuniones de negocios que requieren un toque de distinción.
-      </p>
+      <p class="lead">¿Buscas llevar tu evento o reunión a un nivel épico y memorable? El Barco de Sushi es la cúspide de la elegancia.</p>
       <ul>
         <li>¿Qué incluye? Una selección curada de los mejores rolls, nigiris, y sashimis.</li>
         <li>Ideal para: 10 a 20 personas.</li>
-        <li>El Mensaje: Una experiencia culinaria navegando los sabores más frescos y sofisticados del mar.</li>
       </ul>
       <a href="#" class="btn btn-outline-dark mt-3">Ver Menú de Barcos</a>
     </div>
-
     <div class="col-md-6 order-md-2 mt-4 mt-md-0">
-      <img src="img/evento 4.PNG" class="img-fluid rounded shadow-lg" alt="Barco de Sushi con presentación elegante">
+      <img src="img/evento 4.PNG" class="img-fluid rounded shadow-lg" alt="Barco de Sushi">
     </div>
   </div>
-
-  <div class="my-5"> <div class="row align-items-center mb-5 py-4">
-
-    <div class="col-md-6 order-md-1 mb-4 mb-md-0">
-      <img src="img/estadio 1.jpg" class="img-fluid rounded shadow-lg" alt="Estadio de Sushi con presentación escalonada">
-    </div>
-    
-    <div class="col-md-6 order-md-2">
-      <h3 class="fw-bold text-primary mb-3">Estadios de Sushi: La Fiesta Empieza Aquí</h3>
-      <p class="lead">
-        Para los grandes eventos, fiestas y reuniones donde la energía y la diversión son la prioridad, el **Estadio de Sushi** es la solución. Es una estructura escalonada que convierte el sushi en la estrella central de tu *buffet*.
-      </p>
-      <ul>
-        <li>¿Qué incluye? Grandes cantidades de *rolls* populares, *makis* y opciones vegetarianas.</li>
-        <li>Ideal para: 25 personas o más.</li>
-        <li>El Mensaje: La forma más emocionante y visual de alimentar a una multitud.</li>
-      </ul>
-      <a href="#" class="btn btn-dark mt-3">Solicitar Cotización</a>
-    </div>
-
-  </div>
-
-  <div class="row align-items-center mb-5 py-4">
-    
-    <div class="col-md-6 order-md-1">
-      <h3 class="fw-bold text-primary mb-3">Eventos especiales</h3>
-      <p class="lead">
-        Celebra esos momentos especiales, con el mejor de los sushis 
-      </p>
-      <ul>
-        <li>¿Qué incluye? decoración del punto, a gusto del cliente</li>
-        <li>Ideal para: 10 a 20 personas.</li>
-        <li>El Mensaje: Una experiencia culinaria navegando los sabores más frescos y sofisticados del mar.</li>
-      </ul>
-      <a href="#" class="btn btn-outline-dark mt-3">Solicitar Cotización</a>
-    </div>
-
-    <div class="col-md-6 order-md-2 mt-4 mt-md-0">
-      <img src="img/cumpleaños.JPG" class="img-fluid rounded shadow-lg" alt="Barco de Sushi con presentación elegante">
-    </div>
-  </div>
-
-  <div class="text-center mt-5 p-4 bg-light rounded shadow-sm">
-    <h4 class="fw-bold">¡Haz de tu próxima comida una obra de arte con Sushi Bogotá!</h4>
-    <p>Llámanos o escríbenos para personalizar tu pedido especial.</p>
-  </div>
-
-  
 </section>
 
-
-<section class="container my-5 py-5">
-  <h2 class="text-center mb-5 display-4 fw-bold titulo-negocio">
-    Encuéntranos en Bogotá
-  </h2>
-
+<section id="contacto" class="container my-5 py-5">
+  <h2 class="text-center mb-5 display-4 fw-bold titulo-negocio">Encuéntranos en Bogotá</h2>
   <div class="row">
-    
     <div class="col-md-5 mb-4 mb-md-0">
       <div class="p-4 bg-light rounded shadow-sm h-100">
         <h3 class="fw-bold text-dark mb-3">Contacto y Dirección</h3>
-        
         <h5 class="text-primary mt-4">Nuestra Ubicación Principal</h5>
-        <p class="lead">
-          Carrera 78B # 6-20 SUR, Techo kennedy 
-        </p>
-
+        <p class="lead">Carrera 78B # 6-20 SUR, Techo Kennedy</p>
         <h5 class="text-primary mt-4">Llámanos o Escríbenos</h5>
-        <p class="mb-1">
-          <strong>Teléfono:</strong> <a href="tel:+573114422893" class="text-decoration-none text-dark">(+57) 311 442 28 93</a>
-        </p>
-        <p>
-          <strong>Email:</strong> <a href="sushiBogotadc@gmail.com" class="text-decoration-none text-dark">sushiBogotadc@gmail.com</a>
-        </p>
-        
+        <p class="mb-1"><strong>Teléfono:</strong> <a href="tel:+573114422893">(+57) 311 442 28 93</a></p>
+        <p><strong>Email:</strong> <a href="mailto:sushiBogotadc@gmail.com">sushiBogotadc@gmail.com</a></p>
         <h5 class="text-primary mt-4">Horario de Atención</h5>
-        <p class="mb-0">
-          Martes a Domingo: 12:00 PM - 10:00 PM
-        </p>
-        <p>
-          Lunes: Cerrado
-        </p>
+        <p class="mb-0">Martes a Domingo: 12:00 PM - 10:00 PM</p>
+        <p>Lunes: Cerrado</p>
       </div>
     </div>
-
     <div class="col-md-7">
       <div class="map-responsive rounded shadow-lg overflow-hidden">
-        <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.8222578666428!2d-74.1499093259632!3d4.625779442304454!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9fb9763e7169%3A0x3840096df8bad45c!2sSushi%20Bogot%C3%A1%20D.C!5e0!3m2!1ses-419!2sco!4v1762705948977!5m2!1ses-419!2sco" 
-          width="100%" 
-          height="450" 
-          style="border:0;" 
-          allowfullscreen="" 
-          loading="lazy" 
-          referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
-        </div>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.8222578666428!2d-74.1499093259632!3d4.625779442304454!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9fb9763e7169%3A0x3840096df8bad45c!2sSushi%20Bogot%C3%A1%20D.C!5e0!3m2!1ses-419!2sco!4v1762705948977!5m2!1ses-419!2sco" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+      </div>
     </div>
   </div>
 </section>
 
-<a 
-  href="https://wa.me/573001234567" 
-  class="whatsapp-float" 
-  target="_blank" 
-  rel="noopener noreferrer">
+<!-- Botón flotante de WhatsApp -->
+<a href="https://wa.me/573114422893" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
   <i class="fab fa-whatsapp my-float"></i>
 </a>
 
+<!-- Botón flotante para crear producto -->
+<button id="btn-create-product" class="btn-create-float" title="Crear nuevo producto">
+  <i class="fas fa-plus"></i>
+</button>
+
+<!-- Modal para crear producto -->
+<div id="modal-create-product" class="modal-overlay">
+  <div class="modal-content">
+    <span class="close-modal" id="close-modal">&times;</span>
+    <h2 class="text-2xl font-bold mb-4 text-gray-800">
+      <i class="fas fa-utensils me-2"></i>Crear Nuevo Producto
+    </h2>
+    
+    <form id="form-create-product">
+      <div class="mb-3">
+        <label for="nombre" class="form-label fw-bold">Nombre del Producto *</label>
+        <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Ej: Roll California">
+      </div>
+      
+      <div class="mb-3">
+        <label for="descripcion" class="form-label fw-bold">Descripción</label>
+        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" placeholder="Describe el producto..."></textarea>
+      </div>
+      
+      <div class="mb-3">
+        <label for="precio" class="form-label fw-bold">Precio *</label>
+        <input type="number" step="0.01" class="form-control" id="precio" name="precio" required placeholder="15000">
+      </div>
+      
+      <div class="mb-3">
+        <label for="categoria" class="form-label fw-bold">Categoría *</label>
+        <select class="form-control" id="categoria" name="categoria" required>
+          <option value="">Selecciona una categoría</option>
+          <option value="Rolls">Rolls</option>
+          <option value="Nigiri">Nigiri</option>
+          <option value="Sashimi">Sashimi</option>
+          <option value="Temaki">Temaki</option>
+          <option value="Bowls">Bowls</option>
+          <option value="Entradas">Entradas</option>
+          <option value="Bebidas">Bebidas</option>
+          <option value="Especiales">Especiales</option>
+        </select>
+      </div>
+      
+      <div class="mb-3">
+        <label for="stock" class="form-label fw-bold">Stock</label>
+        <input type="number" class="form-control" id="stock" name="stock" placeholder="10" value="0">
+      </div>
+      
+      <div id="form-message" class="alert d-none" role="alert"></div>
+      
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary flex-grow-1" id="btn-submit">
+          <i class="fas fa-save me-2"></i>Crear Producto
+        </button>
+        <button type="button" class="btn btn-secondary" id="btn-cancel">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <footer class="bg-dark text-white pt-5 pb-3 mt-5">
   <div class="container text-center">
-    
     <a class="d-block mb-3" href="#">
       <img src="img/logo2.png" alt="Logo Sushi Bogotá" height="30" class="d-inline-block align-text-top me-2">
       <span class="ms-2 fw-bold text-white">Sushi Bogotá</span>
     </a>
-
     <div class="mb-4">
       <h5 class="text-uppercase mb-3">Síguenos en Redes</h5>
-      
-      <a href="#" class="text-white mx-2 text-decoration-none">
-        <i class="fab fa-facebook-f"></i> Facebook
-      </a>
-      <a href="#" class="text-white mx-2 text-decoration-none">
-        <i class="fab fa-instagram"></i> Instagram
-      </a>
-      <a href="#" class="text-white mx-2 text-decoration-none">
-        <i class="fab fa-twitter"></i> Twitter
-      </a>
+      <a href="#" class="text-white mx-2 text-decoration-none"><i class="fab fa-facebook-f"></i> Facebook</a>
+      <a href="#" class="text-white mx-2 text-decoration-none"><i class="fab fa-instagram"></i> Instagram</a>
+      <a href="#" class="text-white mx-2 text-decoration-none"><i class="fab fa-twitter"></i> Twitter</a>
     </div>
-
     <div class="text-center py-3 border-top border-secondary">
       &copy; 2025 Sushi Bogotá. Todos los derechos reservados.
     </div>
-
   </div>
 </footer>
 
-
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
-
+<script src="js/api-productos.js"></script>
 </body>
 </html>
